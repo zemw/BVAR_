@@ -1174,7 +1174,8 @@ for  d =  1 : K
     end
     % with zeros and sign restrictions
     if zeros_signs_irf == 1         %= iresponse_zeros_signs( Phi,Sigma,bvar1.hor,lags,var_pos,f,sr);
-        [irzerosign,Omega]          = iresponse_zeros_signs(Phi,Sigma,hor,lags,var_pos,f,sr);
+        % Modified: to incorporate narrative restrictions
+        [irzerosign,Omega]          = iresponse_zeros_signs2(Phi,Sigma,hor,lags,var_pos,f,sr,narrative,errors);
         irzerosign_draws(:,:,:,d)   = irzerosign;
         Omegaz_draws(:,:,d)         = Omega;
         OmegaEmpty(d)          = any(any(isnan(Omega)));
