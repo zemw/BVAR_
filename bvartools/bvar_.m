@@ -1625,6 +1625,7 @@ end
 if zeros_signs_irf == 1
     BVAR.irzerosign_draws   = irzerosign_draws;
     BVAR.Omegaz             = Omegaz_draws;
+    BVAR.OmegaEmpty         = OmegaEmpty;  % so that we know which draw is empty
     BVAR.postPlaus          = (1 - sum(OmegaEmpty)/K);
     %fprintf('\nPosterior plausibility of identifying restrictions: %0.4g.\n',BVAR.postPlaus)
     if robust_credible_regions_
