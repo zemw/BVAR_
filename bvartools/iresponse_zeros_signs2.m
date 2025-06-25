@@ -109,6 +109,11 @@ while counter < draws+1
 %  We check the W satisfie the restrictions
 
     tj = tj +1;
+
+    if tj > toler
+        warning('I could not find a rotation')
+        return;
+    end
     
     C = generateDraw(C1,k);
     
@@ -168,11 +173,6 @@ while counter < draws+1
     % if all check passed
     counter = counter + 1;
     
-    if tj > toler
-        warning('I could not find a rotation')
-        return;
-    end
-    if draws > 10, waitbar(counter/draws, wb); end
 end
 
 
