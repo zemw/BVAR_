@@ -1720,7 +1720,13 @@ if cnnctdnss_
     BVAR.Connectedness.theta         = Ctheta;
 end
 
-
+% report empty draws
+if exist('OmegaEmpty', 'var')
+    postPlaus = (1 - sum(OmegaEmpty)/K);
+    if postPlaus < 1
+        warning("Empty draws generated. Non-empty rate: %.3f", postPlaus);
+    end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % end of bvar_.m
