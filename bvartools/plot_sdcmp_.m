@@ -41,6 +41,7 @@ dmcp_type      = 'stacked';
 tags           = [];
 colors_decomp_yes = 0;
 savefig_yes = 0;
+include_predictable_yes =0;
 % initial_state_dcmp = 0;
 % addplot_=0;
 % addplot0_=0;
@@ -64,13 +65,13 @@ if nargin > 2
 %     if isfield(options,'snames_') == 0 && isfield(options,'stag_') == 1
 %         error('YOu need to provide also ''snames_''')
 %     end
-    if size(ex_names_,1)+1 ~= length(leg)
+    if size(ex_names_,1) ~= length(leg)
         error('Mismatch between shock aggregations and shocks names')
     end
     if isfield(options,'time') ==1
         TT = options.time;
         Tlim   = [TT(1) TT(end)];
-        if isfield(options,'Tlim') ==1;
+        if isfield(options,'Tlim') ==1
             Tlim=options.Tlim;
             if Tlim(1) < TT(1)
                 warning('You have set a intitial date that starts earlier than the first obs');
@@ -108,6 +109,13 @@ if nargin > 2
     if isfield(options,'colors_decomp') ==1 && options.colors_decomp==3
         colors_decomp_yes =3;
     end
+    % customized color palette
+    if isfield(options, 'color_palette') == 1
+        if size(options.color_palette, 1) ~= length(leg)
+            error('Mismatch between color palette and shocks')
+        end
+        colors_decomp_yes =4;
+    end
     if isfield(options,'saveas_dir') ==1
         savefig_yes = 1;
         %   setting the folder where to save the figure
@@ -135,7 +143,14 @@ end
 [~,positions] = ismember(pplotvar,BVAR.varnames);
 pplotvarname  = pplotvar;
 
-deco  = input;
+% include predictable component in the plot
+if isfield(options,'include_predictable') ==1 && options.include_predictable==1
+    deco  = input;
+    leg = [leg; 'Predictable'];
+    include_predictable_yes = 1;
+else
+    deco = input(:,:,1:end-1);
+end
 
 % setting the names of the figure to save
 fnam_suffix = [tags '_shcks_dcmp'];
@@ -182,6 +197,12 @@ elseif colors_decomp_yes == 3
     MAP(end-8,:) = [0 0.25 0]; %brown
     MAP(end-9,:) = [0 0.9 0.9]; % violet
     MAP(end-10,:) = [0.5 0.1 0.1]; % violet
+elseif colors_decomp_yes == 4
+    colors = options.color_palette;
+    if include_predictable_yes ==1
+        colors = [colors; '#CECECE'];
+    end
+    MAP = colors;
 end
 
 st = find(Tlim(1)==TT);
@@ -211,7 +232,12 @@ for j = 1 : size(pplotvar,2)
     end
     
     h= figure('Name',['Shocks Decomposition for ' pplotvarname{j}]);
-    sdec_tot=[sdec,  sum(sdec0,2)];
+    if include_predictable_yes ==1
+        % concatenate predictable component
+        sdec_tot=[sdec, sum(sdec0,2)];
+    else
+        sdec_tot = sdec;
+    end
     if dcmp_group_yes == 0
         ind_pos = (sdec_tot>0);
         ind_neg = (sdec_tot<0);
@@ -220,7 +246,7 @@ for j = 1 : size(pplotvar,2)
         temp      = temp_neg + temp_pos;
         for kk = size(temp,2) : -1 : 1
             hold on
-            bbar = bar(TT(st:en),temp(st:en,kk),dmcp_type,'EdgeColor',[0 0 0]);
+            bbar = bar(TT(st:en),temp(st:en,kk),dmcp_type,'EdgeColor','none');
             set(bbar, 'FaceColor', MAP(kk,:))
             shading faceted; hold on;
         end
@@ -228,7 +254,7 @@ for j = 1 : size(pplotvar,2)
         
     else
         temp      = sdec_tot;
-        bbar = bar(TT(st:en),temp(st:en,:),dmcp_type,'EdgeColor',[0 0 0]); colormap(MAP);
+        bbar = bar(TT(st:en),temp(st:en,:),dmcp_type,'EdgeColor','none'); colormap(MAP);
         %         hleg=legend(leg(1:1:end),'interpreter','none','location','Best');
         %         shading faceted;
         %
@@ -237,7 +263,7 @@ for j = 1 : size(pplotvar,2)
     hold on
     axis tight
     fillips = sum(sdec_tot,2);
-    hold on, h1=plot(TT(st:en),fillips(st:en),'k-d');
+    hold on, h1=plot(TT(st:en),fillips(st:en),'k-.');
     set(h1,'MarkerFaceColor', 'k')
     
     %     if addplot_ ==1
