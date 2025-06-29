@@ -51,14 +51,13 @@ for qq=1:QQ
     if  fig==1
         subplot(2,1,1)
         %plot(time(d+h:enddT),yh(1:enddT-d-h,1),'r', 'linewidth',2);hold  on;
-        plot(time(d+h:enddT),X(d+h:enddT,qq),'r', 'linewidth',2);hold  on;
-        plot(time(d+h:enddT),yt(d+h:enddT,qq),'k--','linewidth',2);hold off; axis  tight;
+        plot(time(d+h:enddT),X(d+h:enddT,qq),'r', 'linewidth',1);hold  on;
+        plot(time(d+h:enddT),yt(d+h:enddT,qq),'k','linewidth',1);hold off; axis  tight;
         legend('data', 'Hamil trend')
         title(titleplot(qq))
         subplot(2,1,2)
-        plot(time(d+h:enddT),yc(d+h:enddT,qq),'b', 'linewidth',2);
+        plot(time(d+h:enddT),yc(d+h:enddT,qq),'b', 'linewidth',1);
         legend('Hamil cycle')
-        pause
     end
 end
 dyc=yc;
