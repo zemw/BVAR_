@@ -1,4 +1,4 @@
-function [ir,Omeg] = iresponse_zeros_signs2(Phi,Sigma,hor,lag,var_pos,f,sr,narrative,errors,draws,toler,normalization_)
+function [ir,Omeg,vv] = iresponse_zeros_signs2(Phi,Sigma,hor,lag,var_pos,f,sr,narrative,errors,draws,toler,normalization_)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -50,6 +50,7 @@ C1        = chol(Sigma,'lower');
 
 ir      = nan(k,hor,k);
 Omeg    = nan(k);
+vv      = nan(size(errors)); 
 
 T = hor; % length of impulse response function. 
 
@@ -168,6 +169,7 @@ while counter < draws+1
         if d ==0
             continue;
         end
+        vv = v; % return structural shocks
     end
     
     % if all check passed

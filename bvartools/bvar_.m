@@ -922,8 +922,9 @@ Sigma_lower_chol_draw = zeros(ny,ny,K);             % Shocks Covariance Cholesks
 ir_draws      = zeros(ny,hor,ny,K);                 % variable, horizon, shock and draws - Cholesky IRF
 irlr_draws    = zeros(ny,hor,ny,K);                 % variable, horizon, shock and draws - Long Run IRF
 Qlr_draws     = zeros(ny,ny,K);                     % long run impact matrix
-e_draws       = zeros(size(yy,1), ny,K);                  % residuals
-fe_draws      = zeros(size(yy,1), ny,fhor,K);                  % residuals
+e_draws       = zeros(size(yy,1), ny,K);                % residuals
+v_draws       = zeros(size(yy,1), ny,K);                % structural shocks
+fe_draws      = zeros(size(yy,1), ny,fhor,K);           % residuals
 yhatfut_no_shocks         = NaN(fhor, ny, K, nunits);   % forecasts with shocks
 yhatfut_with_shocks       = NaN(fhor, ny, K, nunits);   % forecast without the shocks
 yhatfut_cfrcst            = NaN(fhor, ny, K, nunits);   % forecast conditional on endogenous path
@@ -1175,9 +1176,10 @@ for  d =  1 : K
     % with zeros and sign restrictions
     if zeros_signs_irf == 1         %= iresponse_zeros_signs( Phi,Sigma,bvar1.hor,lags,var_pos,f,sr);
         % Modified: to incorporate narrative restrictions
-        [irzerosign,Omega]          = iresponse_zeros_signs2(Phi,Sigma,hor,lags,var_pos,f,sr,narrative,errors);
+        [irzerosign,Omega,vv]       = iresponse_zeros_signs2(Phi,Sigma,hor,lags,var_pos,f,sr,narrative,errors);
         irzerosign_draws(:,:,:,d)   = irzerosign;
         Omegaz_draws(:,:,d)         = Omega;
+        v_draws(:,:,d)              = vv;  % structural shocks
         OmegaEmpty(d)          = any(any(isnan(Omega)));
         % Approximating Giacomini-Kitagawa robust credible sets
         if robust_credible_regions_
@@ -1529,6 +1531,7 @@ BVAR.N            = ny;                 % number of variables
 BVAR.e_draws      = e_draws;            % residuals
 BVAR.e            = e_draws;            % backward compatible with earlier versions
 BVAR.fe_draws     = fe_draws;            % backward compatible with earlier versions
+BVAR.v_draws      = v_draws;
 
 BVAR.posterior    = posterior;
 BVAR.prior        = prior;             % priors used
